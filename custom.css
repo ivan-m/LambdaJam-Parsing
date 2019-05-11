@@ -2,7 +2,8 @@
 
 .slides section.has-light-background,
 .slides section.has-light-background h1,
-.slides section.has-light-background h2 {
+.slides section.has-light-background h2,
+.slides section.has-light-background h3 {
     color: FireBrick;
 }
 
