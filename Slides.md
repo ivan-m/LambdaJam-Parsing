@@ -810,8 +810,20 @@ parseConcatenatedAtoms = many parseQuantifiedAtom
 )
 ```
 
-Exercises
-=========
+Where next?
+===========
+
+> * Better/expandable error messages
+> * Fuse `many . satisfy`
+> * Use `Text` for better memory locality, etc.
+> * What you're about to do in the exercises
+
+::: notes
+
+* `manySatisfy` not really usable for these parsers though, as we
+  don't use `many . satisfy`.
+
+:::
 
 ## Exercises
 
