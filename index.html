@@ -3,14 +3,19 @@
 <head>
   <meta charset="utf-8">
   <meta name="generator" content="pandoc">
-  <meta name="author" content="Ivan Lazar Miljenovic" />
-  <title>Slideshows with Pandoc on Github</title>
-  <meta name="apple-mobile-web-app-capable" content="yes" />
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <link rel="stylesheet" href="reveal.js/css/reveal.css"/>
-  <style type="text/css">code{white-space: pre;}</style>
-  <style type="text/css">
+  <meta name="author" content="Ivan Lazar Miljenovic">
+  <title>Just Parsing Through</title>
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, minimal-ui">
+  <link rel="stylesheet" href="reveal.js/css/reveal.css">
+  <style>
+      code{white-space: pre-wrap;}
+      span.smallcaps{font-variant: small-caps;}
+      span.underline{text-decoration: underline;}
+      div.column{display: inline-block; vertical-align: top; width: 50%;}
+  </style>
+  <style>
 a.sourceLine { display: inline-block; line-height: 1.25; }
 a.sourceLine { pointer-events: none; color: inherit; text-decoration: inherit; }
 a.sourceLine:empty { height: 1.2em; }
@@ -74,15 +79,13 @@ code span.wa { color: #7f9f7f; font-weight: bold; } /* Warning */
   </style>
   <link rel="stylesheet" href="reveal.js/css/theme/night.css" id="theme">
   <link rel="stylesheet" href="custom.css"/>
-  <!-- If the query includes 'print-pdf', include the PDF print sheet -->
+  <!-- Printing and PDF exports -->
   <script>
-    if( window.location.search.match( /print-pdf/gi ) ) {
-      var link = document.createElement( 'link' );
-      link.rel = 'stylesheet';
-      link.type = 'text/css';
-      link.href = 'reveal.js/css/print/pdf.css';
-      document.getElementsByTagName( 'head' )[0].appendChild( link );
-    }
+    var link = document.createElement( 'link' );
+    link.rel = 'stylesheet';
+    link.type = 'text/css';
+    link.href = window.location.search.match( /print-pdf/gi ) ? 'reveal.js/css/print/pdf.css' : 'reveal.js/css/print/paper.css';
+    document.getElementsByTagName( 'head' )[0].appendChild( link );
   </script>
   <!--[if lt IE 9]>
   <script src="reveal.js/lib/js/html5shiv.js"></script>
@@ -92,90 +95,700 @@ code span.wa { color: #7f9f7f; font-weight: bold; } /* Warning */
   <div class="reveal">
     <div class="slides">
 
-<section>
-    <h1 class="title">Slideshows with Pandoc on Github</h1>
-    <h2 class="author">Ivan Lazar Miljenovic</h2>
-    <h3 class="date">17 January, 2017</h3>
+<section id="title-slide">
+  <h1 class="title">Just Parsing Through</h1>
+  <p class="author">Ivan Lazar Miljenovic</p>
+  <p class="date">14 May, 2017</p>
 </section>
 
-<section><section id="about-this-configuration" class="title-slide slide level1"><h1>About this configuration</h1></section><section id="headings" class="slide level2">
-<h2>Headings</h2>
+<section><section id="about-this-workshop" class="title-slide slide level1"><h1>About this workshop</h1></section><section id="introductory-presentation" class="slide level2">
+<h2>Introductory presentation</h2>
+<div class="fragment">
+<h3 id="feel-free-to-jump-straight-to-the-exercises-if-you-prefer.">Feel free to jump straight to the exercises if you prefer.</h3>
+</div>
+</section><section id="getting-the-exercises" class="slide level2">
+<h2>Getting the exercises</h2>
+<div class="sourceCode" id="cb1" style="font-size:70%"><pre class="sourceCode bash"><code class="sourceCode bash"><a class="sourceLine" id="cb1-1" title="1"><span class="fu">git</span> clone https://github.com/ivan-m/LambdaJam-Parsing-exercises.git</a></code></pre></div>
+</section></section>
+<section><section id="why-parser-combinators" class="title-slide slide level1"><h1>Why Parser Combinators?</h1></section><section id="consider-a-common-alternative" class="slide level2">
+<h2>Consider a common alternative…</h2>
+</section><section id="regex-cthulhu" class="slide level2" data-background-image="images/stack-overflow-regex-zalgo.png" data-background-size="contain" data-background="white">
+<h2></h2>
+<div class="fragment">
+<h3 id="this-is-what-using-regexes-brings-you-to-madness">This is what using regexes brings you to! Madness!</h3>
+</div>
+</section><section id="why-not-regexes" class="slide level2">
+<h2>Why not regexes?</h2>
 <ul>
-<li><p>Pandoc puts top-level headings on their own page</p>
-<ul>
-<li>I use setext style headers for them to help make them stand out in the markdown</li>
-</ul></li>
-<li><p>Level-2 headings create new slides</p>
-<ul>
-<li>I prefer atx style headers for those to help add in metadata (e.g. images)</li>
-</ul></li>
-<li><p>You can use other headings as well</p>
-<ul>
-<li>Level-6 headings have been configured in the CSS to help show up as image attribution.</li>
-</ul></li>
+<li class="fragment">Stringly-typed</li>
+<li class="fragment">Not re-usable</li>
+<li class="fragment">Difficult to read</li>
+<li class="fragment">Re-interpreted by compiler</li>
 </ul>
-</section><section id="image-based-slide" class="slide level2" data-background="images/haskell.png" data-background-color="white">
-<h2>Image-based slide</h2>
+</section><section id="compare-the-pair" class="slide level2">
+<h2>Compare the pair</h2>
+<dl>
+<dt>Regular Expressions</dt>
+<dd><div class="sourceCode" id="cb2" style="font-size:60%"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb2-1" title="1"><span class="st">&quot;\.\([[:alpha:]][[:alnum:]-_:\.]*\)&quot;</span></a></code></pre></div>
+</dd>
+<dt>Parser Combinators</dt>
+<dd><div class="sourceCode" id="cb3" style="font-size:60%"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb3-1" title="1">identifierAttr <span class="ot">=</span> <span class="kw">do</span></a>
+<a class="sourceLine" id="cb3-2" title="2">  char <span class="ch">&#39;.&#39;</span></a>
+<a class="sourceLine" id="cb3-3" title="3">  first <span class="ot">&lt;-</span> letter</a>
+<a class="sourceLine" id="cb3-4" title="4">  rest <span class="ot">&lt;-</span> many <span class="op">$</span> alphaNum</a>
+<a class="sourceLine" id="cb3-5" title="5">                 <span class="op">&lt;|&gt;</span> oneOf <span class="st">&quot;-_:.&quot;</span></a>
+<a class="sourceLine" id="cb3-6" title="6">  <span class="fu">return</span> (first<span class="op">:</span>rest)</a></code></pre></div>
+</dd>
+</dl>
+<aside class="notes">
 <ul>
-<li><p>This slide has a background image</p></li>
-<li><p>You may need to put attribution last (Pandoc gets confused sometimes).</p></li>
+<li>Sample taken from Pandoc, identifier in attribute</li>
+<li>regex shorter</li>
+<li>Have I matched all the parens properly?</li>
+<li>combinator version could be shorter</li>
+<li>Which is more readable? combinable?</li>
+<li>regexes more convenient for custom munging</li>
+<li>I forgot the <code>char '.'</code>; which is it easier to spot in?</li>
+<li>Only realised long after writing: regex is invalid!</li>
 </ul>
-<h6 id="attribution-for-image">Attribution for image</h6>
-</section><section id="speaker-notes" class="slide level2">
-<h2>Speaker notes</h2>
+</aside>
+</section><section id="ok-regexes-have-their-uses" class="slide level2">
+<h2>OK, Regexes have their uses…</h2>
 <ul>
-<li><p>Pandoc has in-built support for speaker notes with reveal.js (hit <code>s</code> to reveal them).</p></li>
-<li><div class="sourceCode" id="cb1"><pre class="sourceCode markdown"><code class="sourceCode markdown"><a class="sourceLine" id="cb1-1" title="1">::: notes</a>
-<a class="sourceLine" id="cb1-2" title="2"></a>
-<a class="sourceLine" id="cb1-3" title="3">* <span class="fl">Note 1</span></a>
-<a class="sourceLine" id="cb1-4" title="4"><span class="fl">* Note 2</span></a>
-<a class="sourceLine" id="cb1-5" title="5"></a>
-<a class="sourceLine" id="cb1-6" title="6">:::</a></code></pre></div></li>
+<li class="fragment">Command-line</li>
+<li class="fragment">Inline searches</li>
+<li class="fragment">Quick validation</li>
 </ul>
 <aside class="notes">
 <ul>
-<li>Note 1</li>
-<li>Note 2</li>
+<li>What is common with all these?</li>
+<li>They’re small!</li>
 </ul>
 </aside>
-</section><section id="other" class="slide level2">
-<h2>Other</h2>
+</section><section id="what-about-parser-generators" class="slide level2">
+<h2>What about Parser Generators?</h2>
+<aside class="notes">
 <ul>
-<li><p>reveal.js settings - including specification of the CSS file - are set in a YAML block at the bottom of the markdown file.</p></li>
-<li><p>You can also abuse YAML blocks to add in comments (e.g. to help organise your file, or have a bibliography section with all your links).</p></li>
+<li><em>Requires</em> a grammar</li>
+<li>Combinators easier to extend</li>
+<li>Probably faster</li>
+<li>Can emulate in a parser combinator</li>
+<li>Not embeddable in code</li>
+<li>Usually needs an external tool</li>
 </ul>
+</aside>
+</section><section id="availability-of-parser-combinators" class="slide level2">
+<h2>Availability of parser combinators</h2>
+<ul>
+<li>Most (all?) FP languages</li>
+<li>Javascript</li>
+<li>Java</li>
+<li>C#</li>
+<li>C++</li>
+<li>etc.</li>
+</ul>
+<div class="fragment">
+<blockquote>
+<p><strong>Not just for text!</strong></p>
+</blockquote>
+<aside class="notes">
+<ul>
+<li>Multiple implementations (parsec, attoparsec, polyparse, trifecta, etc.)</li>
+<li>Rite of passage!</li>
+<li>If Java has it, <em>of course</em> C# has to have it to prove they’re better…</li>
+</ul>
+</aside>
+</div>
+</section></section>
+<section><section id="what-are-we-going-to-parse-today" class="title-slide slide level1"><h1>What are we going to parse today?</h1></section><section id="motivating-example" class="slide level2">
+<h2>Motivating example?</h2>
+<div class="fragment">
+<h3 id="regexes">Regexes!</h3>
+<aside class="notes">
+<ul>
+<li>After all, I’ve made fun of them enough!</li>
+</ul>
+</aside>
+</div>
+</section><section id="regex-representation" class="slide level2">
+<h2>Regex Representation</h2>
+<div class="sourceCode" id="cb4"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb4-1" title="1"><span class="co">-- Top-level: abc|(de)+f|ge?|[x-z]</span></a>
+<a class="sourceLine" id="cb4-2" title="2"><span class="kw">type</span> <span class="dt">Pattern</span> <span class="ot">=</span> [<span class="dt">ConcatenatedAtoms</span>]</a>
+<a class="sourceLine" id="cb4-3" title="3"></a>
+<a class="sourceLine" id="cb4-4" title="4"><span class="co">-- Sequence that must be matched in turn</span></a>
+<a class="sourceLine" id="cb4-5" title="5"><span class="kw">type</span> <span class="dt">ConcatenatedAtoms</span> <span class="ot">=</span> [<span class="dt">QuantifiedAtom</span>]</a></code></pre></div>
+</section><section id="regex-representation-2" class="slide level2">
+<h2>Regex Representation (2)</h2>
+<div class="sourceCode" id="cb5"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb5-1" title="1"><span class="co">-- An individual item to match with a quantifier.</span></a>
+<a class="sourceLine" id="cb5-2" title="2"><span class="kw">data</span> <span class="dt">QuantifiedAtom</span> <span class="ot">=</span> <span class="dt">PlainAtom</span>    <span class="dt">Atom</span></a>
+<a class="sourceLine" id="cb5-3" title="3">                    <span class="op">|</span> <span class="dt">OptionalAtom</span> <span class="dt">Atom</span> <span class="co">-- ?</span></a>
+<a class="sourceLine" id="cb5-4" title="4">                    <span class="op">|</span> <span class="dt">AtLeastOne</span>   <span class="dt">Atom</span> <span class="co">-- +</span></a>
+<a class="sourceLine" id="cb5-5" title="5">                    <span class="op">|</span> <span class="dt">Multiple</span>     <span class="dt">Atom</span> <span class="co">-- *</span></a></code></pre></div>
+<aside class="notes">
+<ul>
+<li>Not necessarily the best implementation</li>
+<li>Leads well to our parsing</li>
+</ul>
+</aside>
+</section><section id="regex-representation-3" class="slide level2">
+<h2>Regex Representation (3)</h2>
+<div class="sourceCode" id="cb6"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb6-1" title="1"><span class="co">-- Something to be matched</span></a>
+<a class="sourceLine" id="cb6-2" title="2"><span class="kw">data</span> <span class="dt">Atom</span> <span class="ot">=</span> <span class="dt">AnyChar</span>              <span class="co">-- .</span></a>
+<a class="sourceLine" id="cb6-3" title="3">          <span class="op">|</span> <span class="dt">SpecificChar</span> <span class="dt">Char</span></a>
+<a class="sourceLine" id="cb6-4" title="4">          <span class="op">|</span> <span class="dt">BE</span> <span class="dt">BracketExpression</span></a>
+<a class="sourceLine" id="cb6-5" title="5">          <span class="op">|</span> <span class="dt">SubPattern</span> <span class="dt">Pattern</span></a></code></pre></div>
+</section><section id="regex-representation-4" class="slide level2">
+<h2>Regex Representation (4)</h2>
+<div class="sourceCode" id="cb7"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb7-1" title="1"><span class="co">-- @[1-9]@, @[^a-z]@, etc.</span></a>
+<a class="sourceLine" id="cb7-2" title="2"><span class="kw">data</span> <span class="dt">BracketExpression</span> <span class="ot">=</span> <span class="dt">BracketExpression</span></a>
+<a class="sourceLine" id="cb7-3" title="3">  { <span class="co">-- Starts with ^</span></a>
+<a class="sourceLine" id="cb7-4" title="4"><span class="ot">    inverseExpression ::</span> <span class="dt">Bool</span></a>
+<a class="sourceLine" id="cb7-5" title="5"></a>
+<a class="sourceLine" id="cb7-6" title="6">    <span class="co">-- Non-empty list.</span></a>
+<a class="sourceLine" id="cb7-7" title="7">  ,<span class="ot"> bracketPatterns   ::</span> [<span class="dt">BracketPattern</span>]</a>
+<a class="sourceLine" id="cb7-8" title="8">  }</a></code></pre></div>
+</section><section id="regex-representation-5" class="slide level2">
+<h2>Regex Representation (5)</h2>
+<div class="sourceCode" id="cb8"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb8-1" title="1"><span class="co">-- An element in a bracket expression</span></a>
+<a class="sourceLine" id="cb8-2" title="2"><span class="kw">data</span> <span class="dt">BracketPattern</span> <span class="ot">=</span> <span class="dt">BracketRange</span> <span class="dt">Char</span> <span class="dt">Char</span></a>
+<a class="sourceLine" id="cb8-3" title="3">                    <span class="op">|</span> <span class="dt">BracketChar</span>  <span class="dt">Char</span></a>
+<a class="sourceLine" id="cb8-4" title="4"></a>
+<a class="sourceLine" id="cb8-5" title="5"><span class="co">-- The characters that must typically be escaped.</span></a>
+<a class="sourceLine" id="cb8-6" title="6"><span class="ot">metaChars ::</span> [<span class="dt">Char</span>]</a>
+<a class="sourceLine" id="cb8-7" title="7">metaChars <span class="ot">=</span> [ <span class="ch">&#39;.&#39;</span>, <span class="ch">&#39;|&#39;</span>, <span class="ch">&#39;\\&#39;</span>, <span class="ch">&#39;(&#39;</span>, <span class="ch">&#39;)&#39;</span></a>
+<a class="sourceLine" id="cb8-8" title="8">            , <span class="ch">&#39;[&#39;</span>, <span class="ch">&#39;]&#39;</span>, <span class="ch">&#39;*&#39;</span>, <span class="ch">&#39;+&#39;</span>, <span class="ch">&#39;?&#39;</span></a>
+<a class="sourceLine" id="cb8-9" title="9">            ]</a></code></pre></div>
+<aside class="notes">
+<ul>
+<li>For simplicity, only consider alphanumeric for <code>BracketPattern</code>.</li>
+</ul>
+</aside>
+</section></section>
+<section><section id="defining-our-parser" class="title-slide slide level1"><h1>Defining our Parser</h1></section><section id="what-is-a-parser" class="slide level2">
+<h2>What is a parser?</h2>
+<div class="sourceCode" id="cb9"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb9-1" title="1"><span class="kw">type</span> <span class="dt">Parser</span> a <span class="ot">=</span> <span class="dt">String</span> <span class="ot">-&gt;</span> a</a></code></pre></div>
+<aside class="notes">
+<ul>
+<li>Sounds like what we ultimately want</li>
+<li>Does it give us what we need?</li>
+</ul>
+</aside>
+</section><section id="consider-parsing-an-atom" class="slide level2">
+<h2>Consider parsing an <code>Atom</code></h2>
+<ul>
+<li class="fragment">Let’s parse <code>.</code></li>
+<li class="fragment">Imagine a function <code class="sourceCode haskell"><span class="ot">next ::</span> <span class="dt">Parser</span> <span class="dt">Char</span></code></li>
+</ul>
+<aside class="notes">
+<ul>
+<li>We get the <code>.</code></li>
+<li>Then what?</li>
+<li>Where’s the rest of the input?</li>
+</ul>
+</aside>
+</section><section id="take-2" class="slide level2">
+<h2>Take 2</h2>
+<div class="sourceCode" id="cb10"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb10-1" title="1"><span class="kw">type</span> <span class="dt">Parser</span> a <span class="ot">=</span> <span class="dt">String</span> <span class="ot">-&gt;</span> (a, <span class="dt">String</span>)</a></code></pre></div>
+<aside class="notes">
+<ul>
+<li>Returns unconsumed input</li>
+<li>What happens if it <em>isn’t</em> a <code>.</code>?</li>
+<li>This type says it always returns a value! What if it’s wrong?</li>
+</ul>
+</aside>
+</section><section id="take-3" class="slide level2">
+<h2>Take 3</h2>
+<div class="sourceCode" id="cb11"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb11-1" title="1"><span class="co">-- The result of a parser: either an error</span></a>
+<a class="sourceLine" id="cb11-2" title="2"><span class="co">-- or the expected result.</span></a>
+<a class="sourceLine" id="cb11-3" title="3"><span class="kw">data</span> <span class="dt">Result</span> a <span class="ot">=</span> <span class="dt">Err</span> <span class="dt">String</span></a>
+<a class="sourceLine" id="cb11-4" title="4">              <span class="op">|</span> <span class="dt">OK</span> a</a>
+<a class="sourceLine" id="cb11-5" title="5">              <span class="kw">deriving</span> (<span class="dt">Show</span>)</a>
+<a class="sourceLine" id="cb11-6" title="6"></a>
+<a class="sourceLine" id="cb11-7" title="7"><span class="kw">type</span> <span class="dt">Parser</span> a <span class="ot">=</span> <span class="dt">String</span> <span class="ot">-&gt;</span> (<span class="dt">Result</span> a, <span class="dt">String</span>)</a></code></pre></div>
+<aside class="notes">
+<ul>
+<li>We can use this now!</li>
+<li>But it lets the users of our parser manipulate internals.</li>
+</ul>
+</aside>
+</section><section id="final-definition" class="slide level2">
+<h2>Final definition</h2>
+<div class="sourceCode" id="cb12" style="font-size:70%"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb12-1" title="1"><span class="kw">newtype</span> <span class="dt">Parser</span> a <span class="ot">=</span> <span class="dt">P</span> {<span class="ot"> runP ::</span> <span class="dt">String</span> <span class="ot">-&gt;</span> (<span class="dt">Result</span> a, <span class="dt">String</span>) }</a></code></pre></div>
+<div class="fragment">
+<div class="sourceCode" id="cb13" style="font-size:70%"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb13-1" title="1"><span class="co">-- Shhhhhh!!!!!</span></a>
+<a class="sourceLine" id="cb13-2" title="2"><span class="kw">newtype</span> <span class="dt">State</span> s a <span class="ot">=</span> <span class="dt">St</span> {<span class="ot"> runState ::</span> s <span class="ot">-&gt;</span> (a, s) }</a></code></pre></div>
+<aside class="notes">
+<ul>
+<li>Don’t export constructor</li>
+<li><code>runP</code> runs the parser</li>
+<li><code>newtype</code> is run-time isomorphic to original</li>
+<li>Implemented in <code>Simple.hs</code></li>
+<li>Specialised version of State Monad</li>
+<li>Actual implementation adds the unconsumed input into <code>Result</code></li>
+</ul>
+</aside>
+</div>
+</section></section>
+<section><section id="lets-start-parsing" class="title-slide slide level1"><h1>Let’s start parsing!</h1></section><section id="create-basic-parsers" class="slide level2">
+<h2>Create basic parsers</h2>
+<div class="sourceCode" id="cb14"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb14-1" title="1"><span class="co">-- Lift a value into a parser.</span></a>
+<a class="sourceLine" id="cb14-2" title="2"><span class="ot">liftParser ::</span> a <span class="ot">-&gt;</span> <span class="dt">Parser</span> a</a>
+<a class="sourceLine" id="cb14-3" title="3">liftParser a <span class="ot">=</span> <span class="dt">P</span> <span class="op">$</span> \str <span class="ot">-&gt;</span> (<span class="dt">OK</span> a, str)</a>
+<a class="sourceLine" id="cb14-4" title="4"></a>
+<a class="sourceLine" id="cb14-5" title="5"><span class="co">-- Throw a parser error.</span></a>
+<a class="sourceLine" id="cb14-6" title="6"><span class="ot">failParser ::</span> <span class="dt">String</span> <span class="ot">-&gt;</span> <span class="dt">Parser</span> a</a>
+<a class="sourceLine" id="cb14-7" title="7">failParser err <span class="ot">=</span> <span class="dt">P</span> <span class="op">$</span> \str <span class="ot">-&gt;</span> (<span class="dt">Err</span> err, str)</a></code></pre></div>
+</section><section id="get-some-data" class="slide level2">
+<h2>Get some data</h2>
+<div class="sourceCode" id="cb15"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb15-1" title="1"><span class="co">-- Obtain the next character in the input string.</span></a>
+<a class="sourceLine" id="cb15-2" title="2"><span class="ot">next ::</span> <span class="dt">Parser</span> <span class="dt">Char</span></a>
+<a class="sourceLine" id="cb15-3" title="3">next <span class="ot">=</span> <span class="dt">P</span> <span class="op">$</span> \str <span class="ot">-&gt;</span> <span class="kw">case</span> str <span class="kw">of</span></a>
+<a class="sourceLine" id="cb15-4" title="4">                     c<span class="op">:</span>str&#39; <span class="ot">-&gt;</span> (<span class="dt">OK</span> c, str&#39;)</a>
+<a class="sourceLine" id="cb15-5" title="5">                     _      <span class="ot">-&gt;</span> (<span class="dt">Err</span> <span class="st">&quot;empty&quot;</span>, str)</a></code></pre></div>
+</section><section id="matching-a-predicate" class="slide level2">
+<h2>Matching a predicate</h2>
+<div class="sourceCode" id="cb16" style="font-size:90%"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb16-1" title="1"><span class="ot">satisfy ::</span> (<span class="dt">Char</span> <span class="ot">-&gt;</span> <span class="dt">Bool</span>) <span class="ot">-&gt;</span> <span class="dt">Parser</span> <span class="dt">Char</span></a>
+<a class="sourceLine" id="cb16-2" title="2">satisfy p <span class="ot">=</span> <span class="dt">P</span> <span class="op">$</span> \str <span class="ot">-&gt;</span></a>
+<a class="sourceLine" id="cb16-3" title="3">  <span class="kw">case</span> str <span class="kw">of</span></a>
+<a class="sourceLine" id="cb16-4" title="4">    c<span class="op">:</span>str&#39; <span class="op">|</span> p c       <span class="ot">-&gt;</span> (<span class="dt">OK</span> c, str&#39;)</a>
+<a class="sourceLine" id="cb16-5" title="5">           <span class="op">|</span> <span class="fu">otherwise</span> <span class="ot">-&gt;</span> (<span class="dt">Err</span> <span class="st">&quot;not satisfied&quot;</span>, str)</a>
+<a class="sourceLine" id="cb16-6" title="6">    _                  <span class="ot">-&gt;</span> (<span class="dt">Err</span> <span class="st">&quot;empty&quot;</span>, str)</a>
+<a class="sourceLine" id="cb16-7" title="7"></a>
+<a class="sourceLine" id="cb16-8" title="8"><span class="co">-- For example: parse the specified character.</span></a>
+<a class="sourceLine" id="cb16-9" title="9"><span class="ot">char ::</span> <span class="dt">Char</span> <span class="ot">-&gt;</span> <span class="dt">Parser</span> <span class="dt">Char</span></a>
+<a class="sourceLine" id="cb16-10" title="10">char c <span class="ot">=</span> satisfy (c<span class="op">==</span>)</a></code></pre></div>
+<aside class="notes">
+<ul>
+<li>So we can use <code>char '.'</code></li>
+<li>This definition looks a lot like <code>next</code>…</li>
+<li>Idea: call next, get the result, then test it!</li>
+</ul>
+</aside>
+</section><section id="matching-again" class="slide level2">
+<h2>Matching again</h2>
+<div class="sourceCode" id="cb17" style="font-size:70%"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb17-1" title="1"><span class="co">-- Take the result from one parser, and pass it as a</span></a>
+<a class="sourceLine" id="cb17-2" title="2"><span class="co">-- parameter to a function that returns a parser.</span></a>
+<a class="sourceLine" id="cb17-3" title="3"><span class="ot">withResult ::</span> <span class="dt">Parser</span> a <span class="ot">-&gt;</span> (a <span class="ot">-&gt;</span> <span class="dt">Parser</span> b) <span class="ot">-&gt;</span> <span class="dt">Parser</span> b</a>
+<a class="sourceLine" id="cb17-4" title="4">withResult pa f <span class="ot">=</span> <span class="dt">P</span> <span class="op">$</span> \str <span class="ot">-&gt;</span> <span class="kw">case</span> runP pa str <span class="kw">of</span></a>
+<a class="sourceLine" id="cb17-5" title="5">  (<span class="dt">OK</span> a,  str&#39;) <span class="ot">-&gt;</span> runP (fpb a) str&#39;</a>
+<a class="sourceLine" id="cb17-6" title="6">  (<span class="dt">Err</span> e, str&#39;) <span class="ot">-&gt;</span> (<span class="dt">Err</span> e, str&#39;)</a>
+<a class="sourceLine" id="cb17-7" title="7"></a>
+<a class="sourceLine" id="cb17-8" title="8"><span class="ot">satisfy ::</span> (<span class="dt">Char</span> <span class="ot">-&gt;</span> <span class="dt">Bool</span>) <span class="ot">-&gt;</span> <span class="dt">Parser</span> <span class="dt">Char</span></a>
+<a class="sourceLine" id="cb17-9" title="9">satisfy p <span class="ot">=</span> next <span class="ot">`withResult`</span> checkNext</a>
+<a class="sourceLine" id="cb17-10" title="10">  <span class="kw">where</span></a>
+<a class="sourceLine" id="cb17-11" title="11">    checkNext c</a>
+<a class="sourceLine" id="cb17-12" title="12">      <span class="op">|</span> p c       <span class="ot">=</span> toParser c</a>
+<a class="sourceLine" id="cb17-13" title="13">      <span class="op">|</span> <span class="fu">otherwise</span> <span class="ot">=</span> failParser <span class="st">&quot;not satisfied&quot;</span></a></code></pre></div>
+<aside class="notes">
+<ul>
+<li>Better!</li>
+<li><code>withResult</code> can be very handy</li>
+</ul>
+</aside>
+</section><section id="lets-get-an-anychar" class="slide level2">
+<h2>Let’s get an <code>AnyChar</code></h2>
+<div class="fragment">
+<div class="sourceCode" id="cb18"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb18-1" title="1"><span class="ot">onSuccess ::</span> <span class="dt">Parser</span> a <span class="ot">-&gt;</span> <span class="dt">Parser</span> b <span class="ot">-&gt;</span> <span class="dt">Parser</span> b</a>
+<a class="sourceLine" id="cb18-2" title="2">onSuccess pa pb <span class="ot">=</span> pa <span class="ot">`withResult`</span> (\_ <span class="ot">-&gt;</span> pb)</a>
+<a class="sourceLine" id="cb18-3" title="3"></a>
+<a class="sourceLine" id="cb18-4" title="4"><span class="ot">parseAnyChar ::</span> <span class="dt">Parser</span> <span class="dt">Atom</span></a>
+<a class="sourceLine" id="cb18-5" title="5">parseAnyChar <span class="ot">=</span> char <span class="ch">&#39;.&#39;</span></a>
+<a class="sourceLine" id="cb18-6" title="6">               <span class="ot">`onSuccess`</span></a>
+<a class="sourceLine" id="cb18-7" title="7">               liftParser <span class="dt">AnyChar</span></a></code></pre></div>
+<aside class="notes">
+<ul>
+<li>If we have a <code>.</code> we need to produce an <code>AnyChar</code></li>
+<li>We can use <code>withResult</code> and ignore the first argument!</li>
+</ul>
+</aside>
+</div>
+</section><section id="what-happens-if-it-isnt-." class="slide level2">
+<h2>What happens if it <em>isn’t</em> <code>'.'</code>?</h2>
+<div class="fragment">
+<h3 id="backtracking-options">Backtracking options</h3>
+<ol type="1">
+<li class="fragment">Return every single possible parse</li>
+<li class="fragment"><code>try</code>-based semantics</li>
+<li class="fragment"><code>commit</code>-based semantics</li>
+<li class="fragment">“Just do it already”-based semantics</li>
+</ol>
+<p>::: notes</p>
+<ol type="1">
+<li>This is implemented by <code>ReadS</code>; no-one uses it</li>
+<li>Overlapping patterns and forget the <code>try</code>? No backtracking!</li>
+<li>Forget the <code>commit</code>? Still works, just worse error messages and possibly worse performance.</li>
+<li>As epitomised by <code>attoparsec</code>.</li>
+</ol>
+</div>
+</section><section id="taking-option-4" class="slide level2">
+<h2>Taking Option 4</h2>
+<div class="sourceCode" id="cb19"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb19-1" title="1"><span class="co">-- If the first one fails, try the second one</span></a>
+<a class="sourceLine" id="cb19-2" title="2"><span class="ot">onFail ::</span> <span class="dt">Parser</span> a <span class="ot">-&gt;</span> <span class="dt">Parser</span> a <span class="ot">-&gt;</span> <span class="dt">Parser</span> a</a>
+<a class="sourceLine" id="cb19-3" title="3">onFail p1 p2 <span class="ot">=</span> <span class="dt">P</span> <span class="op">$</span> \str <span class="ot">-&gt;</span> <span class="kw">case</span> runP p1 str <span class="kw">of</span></a>
+<a class="sourceLine" id="cb19-4" title="4">  (<span class="dt">Err</span> _, _) <span class="ot">-&gt;</span> runP p2 str</a>
+<a class="sourceLine" id="cb19-5" title="5">  ok         <span class="ot">-&gt;</span> ok</a>
+<a class="sourceLine" id="cb19-6" title="6"></a>
+<a class="sourceLine" id="cb19-7" title="7"><span class="co">-- Try the parsers in turn until one succeeds</span></a>
+<a class="sourceLine" id="cb19-8" title="8"><span class="ot">oneOf ::</span> [<span class="dt">Parser</span> a] <span class="ot">-&gt;</span> <span class="dt">Parser</span> a</a>
+<a class="sourceLine" id="cb19-9" title="9">oneOf <span class="ot">=</span> <span class="fu">foldr</span> onFail (failparser <span class="st">&quot;all failed&quot;</span>)</a></code></pre></div>
+<aside class="notes">
+<ul>
+<li>So we can now try parsing the next one.</li>
+</ul>
+</aside>
+</section><section id="parsing-specificchar" class="slide level2">
+<h2>Parsing <code>SpecificChar</code></h2>
+<div class="sourceCode" id="cb20"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb20-1" title="1"><span class="ot">parseCharacter ::</span> <span class="dt">Parser</span> <span class="dt">Char</span></a>
+<a class="sourceLine" id="cb20-2" title="2">parseCharacter <span class="ot">=</span> satisfy (<span class="ot">`notElem`</span>metaChars)</a>
+<a class="sourceLine" id="cb20-3" title="3">                 <span class="ot">`onFail`</span></a>
+<a class="sourceLine" id="cb20-4" title="4">                 (char <span class="ch">&#39;\\&#39;</span></a>
+<a class="sourceLine" id="cb20-5" title="5">                  <span class="ot">`onSuccess`</span></a>
+<a class="sourceLine" id="cb20-6" title="6">                  satisfy (<span class="ot">`elem`</span>metachars)</a>
+<a class="sourceLine" id="cb20-7" title="7">                 )</a></code></pre></div>
+<aside class="notes">
+<ul>
+<li>We need to somehow wrap the <code>Char</code> with <code>SpecificChar</code></li>
+</ul>
+</aside>
+</section><section id="apply-a-function-to-the-result" class="slide level2">
+<h2>Apply a function to the result</h2>
+<div class="sourceCode" id="cb21"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb21-1" title="1"><span class="ot">mapResult ::</span> (a <span class="ot">-&gt;</span> b) <span class="ot">-&gt;</span> <span class="dt">Result</span> a <span class="ot">-&gt;</span> <span class="dt">Result</span> b</a>
+<a class="sourceLine" id="cb21-2" title="2">mapResult f (<span class="dt">OK</span> a)  <span class="ot">=</span> <span class="dt">OK</span> (f a)</a>
+<a class="sourceLine" id="cb21-3" title="3">mapResult _ (<span class="dt">Err</span> e) <span class="ot">=</span> <span class="dt">Err</span> e</a>
+<a class="sourceLine" id="cb21-4" title="4"></a>
+<a class="sourceLine" id="cb21-5" title="5"><span class="ot">mapParser ::</span> (a <span class="ot">-&gt;</span> b) <span class="ot">-&gt;</span> <span class="dt">Parser</span> a <span class="ot">-&gt;</span> <span class="dt">Parser</span> b</a>
+<a class="sourceLine" id="cb21-6" title="6">mapParser f p <span class="ot">=</span> <span class="dt">P</span> <span class="op">$</span> \str <span class="ot">-&gt;</span></a>
+<a class="sourceLine" id="cb21-7" title="7">  <span class="kw">let</span> (res, str&#39;) <span class="ot">=</span> runP p str</a>
+<a class="sourceLine" id="cb21-8" title="8">  <span class="kw">in</span> (mapResult f res, str&#39;)</a></code></pre></div>
+</section><section id="that-reminds-me-of-something" class="slide level2">
+<h2>That reminds me of something</h2>
+<div class="sourceCode" id="cb22" style="font-size:80%"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb22-1" title="1"><span class="ot">mapResult ::</span> (a <span class="ot">-&gt;</span> b) <span class="ot">-&gt;</span> <span class="dt">Result</span> a  <span class="ot">-&gt;</span> <span class="dt">Result</span> b</a>
+<a class="sourceLine" id="cb22-2" title="2"></a>
+<a class="sourceLine" id="cb22-3" title="3"><span class="ot">mapParser ::</span> (a <span class="ot">-&gt;</span> b) <span class="ot">-&gt;</span> <span class="dt">Parser</span> a  <span class="ot">-&gt;</span> <span class="dt">Parser</span> b</a>
+<a class="sourceLine" id="cb22-4" title="4"></a>
+<a class="sourceLine" id="cb22-5" title="5"><span class="fu">map</span><span class="ot">       ::</span> (a <span class="ot">-&gt;</span> b) <span class="ot">-&gt;</span>       [a] <span class="ot">-&gt;</span>       [b]</a>
+<a class="sourceLine" id="cb22-6" title="6"></a>
+<a class="sourceLine" id="cb22-7" title="7"><span class="co">-- Generalising</span></a>
+<a class="sourceLine" id="cb22-8" title="8"></a>
+<a class="sourceLine" id="cb22-9" title="9"><span class="ot">mapF      ::</span> (a <span class="ot">-&gt;</span> b) <span class="ot">-&gt;</span> f      a  <span class="ot">-&gt;</span> f      b</a></code></pre></div>
+</section><section id="i-dub-thee-functor" class="slide level2">
+<h2>I dub thee Functor!</h2>
+<div class="sourceCode" id="cb23" style="font-size:90%"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb23-1" title="1"><span class="kw">class</span> <span class="dt">Functor</span> f <span class="kw">where</span></a>
+<a class="sourceLine" id="cb23-2" title="2"><span class="ot">  fmap ::</span> (a <span class="ot">-&gt;</span> b) <span class="ot">-&gt;</span> f a <span class="ot">-&gt;</span> f b</a>
+<a class="sourceLine" id="cb23-3" title="3"></a>
+<a class="sourceLine" id="cb23-4" title="4"><span class="kw">instance</span> <span class="dt">Functor</span> <span class="dt">Result</span> <span class="kw">where</span></a>
+<a class="sourceLine" id="cb23-5" title="5">  <span class="fu">fmap</span> <span class="ot">=</span> mapResult</a>
+<a class="sourceLine" id="cb23-6" title="6"></a>
+<a class="sourceLine" id="cb23-7" title="7"><span class="kw">instance</span> <span class="dt">Functor</span> <span class="dt">Parser</span> <span class="kw">where</span></a>
+<a class="sourceLine" id="cb23-8" title="8">  <span class="fu">fmap</span> <span class="ot">=</span> mapParser</a>
+<a class="sourceLine" id="cb23-9" title="9"></a>
+<a class="sourceLine" id="cb23-10" title="10"><span class="co">-- (&lt;$&gt;) is an infix alias for fmap</span></a></code></pre></div>
+<aside class="notes">
+<ul>
+<li><code>&lt;$&gt;</code> vs <code>$</code></li>
+<li>Functor laws</li>
+</ul>
+</aside>
+</section><section id="what-we-have-so-far" class="slide level2">
+<h2>What we have so far</h2>
+<div class="sourceCode" id="cb24"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb24-1" title="1"><span class="ot">parseAtom ::</span> <span class="dt">Parser</span> <span class="dt">Atom</span></a>
+<a class="sourceLine" id="cb24-2" title="2">parseAtom <span class="ot">=</span> parseAnyChar</a>
+<a class="sourceLine" id="cb24-3" title="3">            <span class="ot">`onFail`</span></a>
+<a class="sourceLine" id="cb24-4" title="4">            <span class="fu">fmap</span> <span class="dt">SpecificChar</span> parseCharacter</a></code></pre></div>
+<aside class="notes">
+<ul>
+<li>Now need to look at parsing bracket expressions</li>
+<li>Let’s start with the bracket patterns</li>
+</ul>
+</aside>
+</section><section id="bracket-patterns" class="slide level2">
+<h2>Bracket Patterns</h2>
+<div class="sourceCode" id="cb25"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb25-1" title="1"><span class="ot">parseBracketPattern ::</span> <span class="dt">Parser</span> <span class="dt">BracketPattern</span></a>
+<a class="sourceLine" id="cb25-2" title="2">parseBracketPattern <span class="ot">=</span></a>
+<a class="sourceLine" id="cb25-3" title="3">  <span class="fu">fmap</span> <span class="dt">BracketChar</span> pChar</a>
+<a class="sourceLine" id="cb25-4" title="4">  <span class="ot">`onFail`</span></a>
+<a class="sourceLine" id="cb25-5" title="5">  (pChar <span class="ot">`withResult`</span> \s <span class="ot">-&gt;</span></a>
+<a class="sourceLine" id="cb25-6" title="6">     char <span class="ch">&#39;-&#39;</span> <span class="ot">`onSuccess`</span></a>
+<a class="sourceLine" id="cb25-7" title="7">       <span class="fu">fmap</span> (<span class="dt">BracketRange</span> s) pChar</a>
+<a class="sourceLine" id="cb25-8" title="8">  <span class="kw">where</span></a>
+<a class="sourceLine" id="cb25-9" title="9">    pChar <span class="ot">=</span> satisfy <span class="fu">isAlphaNum</span></a></code></pre></div>
+<aside class="notes">
+<ul>
+<li>Remember, we’re simplifying by only considering alphanumeric bracket expression patterns.</li>
+<li>Can you see what’s wrong with this?</li>
+<li>We’re not really <em>using</em> the result from <code>withResult</code>; can we make it nicer?</li>
+</ul>
+</aside>
+</section><section id="applying-lifted-functions" class="slide level2">
+<h2>Applying lifted functions</h2>
+<div class="sourceCode" id="cb26" style="font-size:80%"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb26-1" title="1"><span class="ot">apply ::</span> <span class="dt">Parser</span> (a <span class="ot">-&gt;</span> b) <span class="ot">-&gt;</span> <span class="dt">Parser</span> a <span class="ot">-&gt;</span> <span class="dt">Parser</span> b</a>
+<a class="sourceLine" id="cb26-2" title="2">apply pf pa <span class="ot">=</span> <span class="dt">P</span> <span class="op">$</span> \str <span class="ot">-&gt;</span> <span class="kw">case</span> runP pf str <span class="kw">of</span></a>
+<a class="sourceLine" id="cb26-3" title="3">  (<span class="dt">OK</span> f, str&#39;)  <span class="ot">-&gt;</span> runP (f <span class="op">&lt;$&gt;</span> pa) str&#39;</a>
+<a class="sourceLine" id="cb26-4" title="4">  (<span class="dt">Err</span> e, str&#39;) <span class="ot">-&gt;</span> (<span class="dt">Err</span> e, str&#39;)</a>
+<a class="sourceLine" id="cb26-5" title="5"></a>
+<a class="sourceLine" id="cb26-6" title="6"><span class="ot">parseBracketPattern ::</span> <span class="dt">Parser</span> <span class="dt">BracketPattern</span></a>
+<a class="sourceLine" id="cb26-7" title="7">parseBracketPattern <span class="ot">=</span> (<span class="fu">fmap</span> <span class="dt">BracketRange</span> pChar <span class="ot">`apply`</span></a>
+<a class="sourceLine" id="cb26-8" title="8">                         (char <span class="ch">&#39;-&#39;</span> <span class="ot">`onSuccess`</span> pChar))</a>
+<a class="sourceLine" id="cb26-9" title="9">                      <span class="ot">`onFail`</span></a>
+<a class="sourceLine" id="cb26-10" title="10">                      <span class="fu">fmap</span> <span class="dt">BracketChar</span> pChar</a>
+<a class="sourceLine" id="cb26-11" title="11">  <span class="kw">where</span></a>
+<a class="sourceLine" id="cb26-12" title="12">    pChar <span class="ot">=</span> satisfy <span class="fu">isAlphaNum</span></a></code></pre></div>
+<aside class="notes">
+<ul>
+<li>Could always have done <code>f &lt;$&gt;</code> after <code>runP</code></li>
+</ul>
+</aside>
+</section><section id="re-visiting-onsuccess" class="slide level2">
+<h2>Re-visiting <code>onSuccess</code></h2>
+<div class="sourceCode" id="cb27"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb27-1" title="1"><span class="ot">onSuccess ::</span> <span class="dt">Parser</span> a <span class="ot">-&gt;</span> <span class="dt">Parser</span> b <span class="ot">-&gt;</span> <span class="dt">Parser</span> b</a>
+<a class="sourceLine" id="cb27-2" title="2">onSuccess pa pb <span class="ot">=</span> (<span class="fu">flip</span> <span class="fu">const</span> <span class="op">&lt;$&gt;</span> pa) <span class="ot">`apply`</span> pb</a>
+<a class="sourceLine" id="cb27-3" title="3"></a>
+<a class="sourceLine" id="cb27-4" title="4"><span class="ot">discard ::</span> <span class="dt">Parser</span> a <span class="ot">-&gt;</span> <span class="dt">Parser</span> b <span class="ot">-&gt;</span> <span class="dt">Parser</span> b</a>
+<a class="sourceLine" id="cb27-5" title="5">discard pa pb <span class="ot">=</span> (<span class="fu">const</span> <span class="op">&lt;$&gt;</span> pa) <span class="ot">`apply`</span> pb</a>
+<a class="sourceLine" id="cb27-6" title="6"></a>
+<a class="sourceLine" id="cb27-7" title="7"><span class="co">-- const a b = a</span></a>
+<a class="sourceLine" id="cb27-8" title="8"><span class="co">-- flip f a b = f b a</span></a>
+<a class="sourceLine" id="cb27-9" title="9"><span class="co">-- flip const a b = const b a = b</span></a></code></pre></div>
+<aside class="notes">
+<ul>
+<li><code>flip</code>, <code>const</code> already exists</li>
+<li><code>apply</code> is a very common pattern</li>
+</ul>
+</aside>
+</section><section id="applying-all-this" class="slide level2">
+<h2>Applying all this</h2>
+<div class="sourceCode" id="cb28" style="font-size:70%"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb28-1" title="1"><span class="kw">class</span> (<span class="dt">Functor</span> f) <span class="ot">=&gt;</span> <span class="dt">Applicative</span> f <span class="kw">where</span></a>
+<a class="sourceLine" id="cb28-2" title="2">    <span class="co">-- Lift a value.</span></a>
+<a class="sourceLine" id="cb28-3" title="3"><span class="ot">    pure ::</span> a <span class="ot">-&gt;</span> f a</a>
+<a class="sourceLine" id="cb28-4" title="4"></a>
+<a class="sourceLine" id="cb28-5" title="5">    <span class="co">-- Sequential application.</span></a>
+<a class="sourceLine" id="cb28-6" title="6"><span class="ot">    (&lt;*&gt;) ::</span> f (a <span class="ot">-&gt;</span> b) <span class="ot">-&gt;</span> f a <span class="ot">-&gt;</span> f b</a>
+<a class="sourceLine" id="cb28-7" title="7"></a>
+<a class="sourceLine" id="cb28-8" title="8"><span class="kw">instance</span> <span class="dt">Applicative</span> <span class="dt">Parser</span> <span class="kw">where</span></a>
+<a class="sourceLine" id="cb28-9" title="9">  <span class="fu">pure</span> <span class="ot">=</span> liftParser</a>
+<a class="sourceLine" id="cb28-10" title="10">  (<span class="op">&lt;*&gt;</span>) <span class="ot">=</span> apply</a>
+<a class="sourceLine" id="cb28-11" title="11"></a>
+<a class="sourceLine" id="cb28-12" title="12">onSuccess <span class="ot">=</span> (<span class="op">*&gt;</span>)</a>
+<a class="sourceLine" id="cb28-13" title="13">discard   <span class="ot">=</span> (<span class="op">&lt;*</span>)</a></code></pre></div>
+<aside class="notes">
+<ul>
+<li><code>*&gt;</code> and <code>&lt;*</code> are pre-defined (though can be overriden in newer versions of the typeclass)</li>
+</ul>
+</aside>
+</section><section id="alternatively" class="slide level2">
+<h2>Alternatively…</h2>
+<div class="sourceCode" id="cb29" style="font-size:70%"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb29-1" title="1"><span class="kw">class</span> (<span class="dt">Applicative</span> f) <span class="ot">=&gt;</span> <span class="dt">Alternative</span> f <span class="kw">where</span></a>
+<a class="sourceLine" id="cb29-2" title="2">    <span class="co">-- The identity of &#39;&lt;|&gt;&#39;</span></a>
+<a class="sourceLine" id="cb29-3" title="3"><span class="ot">    empty ::</span> f a</a>
+<a class="sourceLine" id="cb29-4" title="4"></a>
+<a class="sourceLine" id="cb29-5" title="5">    <span class="co">-- An associative binary operation</span></a>
+<a class="sourceLine" id="cb29-6" title="6"><span class="ot">    (&lt;|&gt;) ::</span> f a <span class="ot">-&gt;</span> f a <span class="ot">-&gt;</span> f a</a>
+<a class="sourceLine" id="cb29-7" title="7"></a>
+<a class="sourceLine" id="cb29-8" title="8"><span class="kw">instance</span> <span class="dt">Alternative</span> <span class="dt">Parser</span> <span class="kw">where</span></a>
+<a class="sourceLine" id="cb29-9" title="9">  empty <span class="ot">=</span> failParser <span class="st">&quot;empty value&quot;</span></a>
+<a class="sourceLine" id="cb29-10" title="10">  (<span class="op">&lt;|&gt;</span>) <span class="ot">=</span> onFail</a>
+<a class="sourceLine" id="cb29-11" title="11"></a>
+<a class="sourceLine" id="cb29-12" title="12"><span class="co">-- With Alternative, we also get for free:</span></a>
+<a class="sourceLine" id="cb29-13" title="13">many,<span class="ot"> some ::</span> <span class="dt">Parser</span> a <span class="ot">-&gt;</span> <span class="dt">Parser</span> [a]</a></code></pre></div>
+<aside class="notes">
+<ul>
+<li><code>some</code> is non-empty; <code>many</code> can be empty</li>
+<li><code>oneOf</code> stays as-is</li>
+</ul>
+</aside>
+</section><section id="using-applicative" class="slide level2">
+<h2>Using Applicative</h2>
+<div class="sourceCode" id="cb30"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb30-1" title="1"><span class="ot">parseBracketPattern ::</span> <span class="dt">Parser</span> <span class="dt">BracketExpression</span></a>
+<a class="sourceLine" id="cb30-2" title="2">parseBracketPattern <span class="ot">=</span></a>
+<a class="sourceLine" id="cb30-3" title="3">  (<span class="dt">BracketRange</span> <span class="op">&lt;$&gt;</span> pChar <span class="op">&lt;*&gt;</span> (char <span class="ch">&#39;-&#39;</span> <span class="op">*&gt;</span> pChar)</a>
+<a class="sourceLine" id="cb30-4" title="4">  <span class="op">&lt;|&gt;</span></a>
+<a class="sourceLine" id="cb30-5" title="5">  (<span class="dt">BracketChar</span> <span class="op">&lt;$&gt;</span> pChar)</a>
+<a class="sourceLine" id="cb30-6" title="6">  <span class="kw">where</span></a>
+<a class="sourceLine" id="cb30-7" title="7">    pChar <span class="ot">=</span> satisfy <span class="fu">isAlphaNum</span></a></code></pre></div>
+<aside class="notes">
+<ul>
+<li>We’re parsing the first character both times</li>
+<li>We can solve this with <code>withResult</code>, but the syntax is a bit clunky.</li>
+<li>Is there a typeclass that captures <code>withResult</code>?</li>
+</ul>
+</aside>
+</section><section id="warm-fuzzy-things" class="slide level2">
+<h2>Warm Fuzzy Things</h2>
+<ul>
+<li class="fragment">aka <em>Workflows</em></li>
+<li class="fragment"><del>aka <em>Burritos</em></del></li>
+<li class="fragment">aka “a monoid in the category of endofunctors”</li>
+<li class="fragment">aka <span class="smallcaps"><em>Monads</em></span></li>
+</ul>
+<aside class="notes">
+<ul>
+<li>Workflows are from F#</li>
+<li>SPJ: Our biggest mistake: Using the scary term “monad” rather than “warm fuzzy thing” (Wearing the hair shirt: a retrospective on Haskell (2003))</li>
+<li>“monoid” from “A Brief, Incomplete, and Mostly Wrong History of Programming Languages” by James Iry (supposedly Philip Wadler)</li>
+<li>Burritos from: Abstraction, intuition, and the “monad tutorial fallacy” by Brent Yorgey</li>
+</ul>
+</aside>
+</section><section id="the-m-word" class="slide level2">
+<h2>The “M” word</h2>
+<div class="sourceCode" id="cb31"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb31-1" title="1"><span class="kw">class</span> (<span class="dt">Applicative</span> m) <span class="ot">=&gt;</span> <span class="dt">Monad</span> m <span class="kw">where</span></a>
+<a class="sourceLine" id="cb31-2" title="2">    <span class="co">-- Usually called &quot;bind&quot;</span></a>
+<a class="sourceLine" id="cb31-3" title="3"><span class="ot">    (&gt;&gt;=) ::</span> m a <span class="ot">-&gt;</span> (a <span class="ot">-&gt;</span> m b) <span class="ot">-&gt;</span> m b</a>
+<a class="sourceLine" id="cb31-4" title="4"></a>
+<a class="sourceLine" id="cb31-5" title="5">    <span class="co">-- This is being moved into &#39;MonadFail&#39;</span></a>
+<a class="sourceLine" id="cb31-6" title="6"><span class="ot">    fail ::</span> <span class="dt">String</span> <span class="ot">-&gt;</span> m a</a>
+<a class="sourceLine" id="cb31-7" title="7"></a>
+<a class="sourceLine" id="cb31-8" title="8"><span class="kw">instance</span> <span class="dt">Monad</span> <span class="dt">Parser</span> <span class="kw">where</span></a>
+<a class="sourceLine" id="cb31-9" title="9">  (<span class="op">&gt;&gt;=</span>) <span class="ot">=</span> withResult</a>
+<a class="sourceLine" id="cb31-10" title="10">  <span class="fu">fail</span> <span class="ot">=</span> failParser</a></code></pre></div>
+<aside class="notes">
+<ul>
+<li>Technically also has <code>return</code> and <code>(&gt;&gt;)</code>, but these are nowadays just aliases of <code>pure</code> and <code>(*&gt;)</code>.</li>
+<li><code>fail</code> is considered a wart; used for pattern matching failures; MonadFail in GHC 8.6</li>
+<li>Parsers possibly only semi-valid use of explicit <code>fail</code> (but better to use specialised function)</li>
+</ul>
+</aside>
+</section><section id="what-do-monads-give-us" class="slide level2">
+<h2>What do Monads give us?</h2>
+<div class="sourceCode" id="cb32"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb32-1" title="1">ma <span class="op">&gt;&gt;=</span> f <span class="op">===</span> <span class="kw">do</span> a <span class="ot">&lt;-</span> ma</a>
+<a class="sourceLine" id="cb32-2" title="2">                f a</a>
+<a class="sourceLine" id="cb32-3" title="3"></a>
+<a class="sourceLine" id="cb32-4" title="4">ma <span class="op">*&gt;</span> mb <span class="op">===</span> <span class="kw">do</span> ma</a>
+<a class="sourceLine" id="cb32-5" title="5">                mb</a></code></pre></div>
+</section><section id="using-monads" class="slide level2">
+<h2>Using Monads</h2>
+<div class="sourceCode" id="cb33"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb33-1" title="1"><span class="ot">parseBracketPattern ::</span> <span class="dt">Parser</span> <span class="dt">BracketPattern</span></a>
+<a class="sourceLine" id="cb33-2" title="2">parseBracketPattern <span class="ot">=</span> <span class="kw">do</span></a>
+<a class="sourceLine" id="cb33-3" title="3">  c <span class="ot">&lt;-</span> pChar</a>
+<a class="sourceLine" id="cb33-4" title="4">  oneOf [ char <span class="ch">&#39;-&#39;</span> <span class="op">*&gt;</span> <span class="fu">fmap</span> (<span class="dt">BracketRange</span> c) pChar</a>
+<a class="sourceLine" id="cb33-5" title="5">        , <span class="fu">pure</span> (<span class="dt">BracketChar</span> c)</a>
+<a class="sourceLine" id="cb33-6" title="6">        ]</a>
+<a class="sourceLine" id="cb33-7" title="7">  <span class="kw">where</span></a>
+<a class="sourceLine" id="cb33-8" title="8">    pChar <span class="ot">=</span> satisfy <span class="fu">isAlphaNum</span></a></code></pre></div>
+</section><section id="bracket-expressions" class="slide level2">
+<h2>Bracket Expressions</h2>
+<div class="sourceCode" id="cb34" style="font-size:80%"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb34-1" title="1"><span class="ot">parseBracketExpression ::</span> <span class="dt">Parser</span> <span class="dt">BracketExpression</span></a>
+<a class="sourceLine" id="cb34-2" title="2">parseBracketExpressoin <span class="ot">=</span> bracket (char <span class="ch">&#39;[&#39;</span>) (char <span class="ch">&#39;]&#39;</span>)</a>
+<a class="sourceLine" id="cb34-3" title="3">  <span class="op">$</span> <span class="dt">BracketExpression</span> <span class="op">&lt;$&gt;</span> checkInverse</a>
+<a class="sourceLine" id="cb34-4" title="4">                      <span class="op">&lt;*&gt;</span> some parseBracketPattern</a>
+<a class="sourceLine" id="cb34-5" title="5">  <span class="kw">where</span></a>
+<a class="sourceLine" id="cb34-6" title="6">    checkInverse <span class="ot">=</span> isJust <span class="op">&lt;$&gt;</span> optional (char <span class="ch">&#39;^&#39;</span>)</a>
+<a class="sourceLine" id="cb34-7" title="7"></a>
+<a class="sourceLine" id="cb34-8" title="8"><span class="ot">bracket ::</span> <span class="dt">Parser</span> bra <span class="ot">-&gt;</span> <span class="dt">Parser</span> ket <span class="ot">-&gt;</span> <span class="dt">Parser</span> a <span class="ot">-&gt;</span> <span class="dt">Parser</span> a</a>
+<a class="sourceLine" id="cb34-9" title="9">bracket pb pk pa <span class="ot">=</span> pb <span class="op">*&gt;</span> pa <span class="op">&lt;*</span> pk</a>
+<a class="sourceLine" id="cb34-10" title="10"></a>
+<a class="sourceLine" id="cb34-11" title="11"><span class="co">-- Pre-defined</span></a>
+<a class="sourceLine" id="cb34-12" title="12"><span class="ot">optional ::</span> (<span class="dt">Alternative</span> f) <span class="ot">=&gt;</span> f a <span class="ot">-&gt;</span> f (<span class="dt">Maybe</span> a)</a></code></pre></div>
+</section><section id="finishing-parseatom" class="slide level2">
+<h2>Finishing <code>parseAtom</code></h2>
+<div class="sourceCode" id="cb35" style="font-size:80%"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb35-1" title="1"><span class="ot">parseAtom ::</span> <span class="dt">Parser</span> <span class="dt">Atom</span></a>
+<a class="sourceLine" id="cb35-2" title="2">parseAtom <span class="ot">=</span> oneOf [ char <span class="ch">&#39;.&#39;</span> <span class="op">*&gt;</span> <span class="fu">pure</span> <span class="dt">AnyChar</span></a>
+<a class="sourceLine" id="cb35-3" title="3">                  , <span class="dt">SpecificChar</span> <span class="op">&lt;$&gt;</span> parseCharacter</a>
+<a class="sourceLine" id="cb35-4" title="4">                  , <span class="dt">BE</span> <span class="op">&lt;$&gt;</span> parseBracketExpression</a>
+<a class="sourceLine" id="cb35-5" title="5">                  , <span class="dt">SubPattern</span> <span class="op">&lt;$&gt;</span> parseSubPattern</a>
+<a class="sourceLine" id="cb35-6" title="6">                  ]</a>
+<a class="sourceLine" id="cb35-7" title="7">  <span class="kw">where</span></a>
+<a class="sourceLine" id="cb35-8" title="8">    parseSubPattern <span class="ot">=</span> bracket (char <span class="ch">&#39;(&#39;</span>) (char <span class="ch">&#39;)&#39;</span>)</a>
+<a class="sourceLine" id="cb35-9" title="9">                              parsePattern</a>
+<a class="sourceLine" id="cb35-10" title="10"></a>
+<a class="sourceLine" id="cb35-11" title="11"><span class="co">-- Assume defined</span></a>
+<a class="sourceLine" id="cb35-12" title="12"><span class="ot">parsePattern ::</span> <span class="dt">Parser</span> <span class="dt">Pattern</span></a></code></pre></div>
+<aside class="notes">
+<ul>
+<li>Remember, <code>parsePattern</code> is our top-level parser</li>
+<li>How do you do recursive parser calls with regexes?</li>
+</ul>
+</aside>
+</section><section id="quantify-atoms" class="slide level2">
+<h2>Quantify atoms</h2>
+<div class="sourceCode" id="cb36" style="font-size:80%"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb36-1" title="1"><span class="co">-- (&lt;**&gt;) is the same as (&lt;*&gt;)</span></a>
+<a class="sourceLine" id="cb36-2" title="2"><span class="co">-- but in the opposite order.</span></a>
+<a class="sourceLine" id="cb36-3" title="3"><span class="ot">parseQuantifiedAtom ::</span> <span class="dt">Parser</span> <span class="dt">QuantifiedAtom</span></a>
+<a class="sourceLine" id="cb36-4" title="4">parseQuantifiedAtom <span class="ot">=</span> parseAtom <span class="op">&lt;**&gt;</span> parseQuantifier</a>
+<a class="sourceLine" id="cb36-5" title="5"></a>
+<a class="sourceLine" id="cb36-6" title="6"><span class="ot">parseQuantifier ::</span> <span class="dt">Parser</span> (<span class="dt">Atom</span> <span class="ot">-&gt;</span> <span class="dt">QuantifiedAtom</span>)</a>
+<a class="sourceLine" id="cb36-7" title="7">parseQuantifier <span class="ot">=</span> oneOf [ char <span class="ch">&#39;?&#39;</span> <span class="op">*&gt;</span> <span class="fu">pure</span> <span class="dt">OptionalAtom</span></a>
+<a class="sourceLine" id="cb36-8" title="8">                        , char <span class="ch">&#39;+&#39;</span> <span class="op">*&gt;</span> <span class="fu">pure</span> <span class="dt">AtLeastOne</span></a>
+<a class="sourceLine" id="cb36-9" title="9">                        , char <span class="ch">&#39;*&#39;</span> <span class="op">*&gt;</span> <span class="fu">pure</span> <span class="dt">Multiple</span></a>
+<a class="sourceLine" id="cb36-10" title="10">                        ,             <span class="fu">pure</span> <span class="dt">PlainAtom</span></a>
+<a class="sourceLine" id="cb36-11" title="11">                        ]</a></code></pre></div>
+<aside class="notes">
+<ul>
+<li>Can you see why PlainAtom has to be last?</li>
+</ul>
+</aside>
+</section><section id="wrapping-up" class="slide level2">
+<h2>Wrapping up</h2>
+<div class="sourceCode" id="cb37" style="font-size:80%"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb37-1" title="1"><span class="ot">parsePattern ::</span> <span class="dt">Parser</span> <span class="dt">Pattern</span></a>
+<a class="sourceLine" id="cb37-2" title="2">parsePattern <span class="ot">=</span> sepBy1 parseConcatenatedAtoms (char <span class="ch">&#39;|&#39;</span>)</a>
+<a class="sourceLine" id="cb37-3" title="3"></a>
+<a class="sourceLine" id="cb37-4" title="4"><span class="co">-- Parse a non-empty list of items</span></a>
+<a class="sourceLine" id="cb37-5" title="5"><span class="co">-- separated by discarded junk.</span></a>
+<a class="sourceLine" id="cb37-6" title="6"><span class="ot">sepBy1 ::</span> <span class="dt">Parser</span> a <span class="ot">-&gt;</span> <span class="dt">Parser</span> sep <span class="ot">-&gt;</span> <span class="dt">Parser</span> [a]</a>
+<a class="sourceLine" id="cb37-7" title="7">sepBy1 pa psep <span class="ot">=</span> (<span class="op">:</span>) <span class="op">&lt;$&gt;</span> pa <span class="op">&lt;*&gt;</span> many (psep <span class="op">*&gt;</span> pa)</a>
+<a class="sourceLine" id="cb37-8" title="8"></a>
+<a class="sourceLine" id="cb37-9" title="9"><span class="co">-- We need to allow the empty case as that&#39;s valid!</span></a>
+<a class="sourceLine" id="cb37-10" title="10"><span class="ot">parseConcatenatedAtoms ::</span> <span class="dt">Parser</span> <span class="dt">ConcatenatedAtoms</span></a>
+<a class="sourceLine" id="cb37-11" title="11">parseConcatenatedAtoms <span class="ot">=</span> many parseQuantifiedAtom</a></code></pre></div>
+</section><section id="lets-test-it-out" class="slide level2">
+<h2>Let’s test it out!</h2>
+<div class="sourceCode" id="cb38" style="font-size:70%"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb38-1" title="1">λ<span class="op">&gt;</span> runParser parsePattern <span class="st">&quot;abc|(de)+f|ge?|[x-z]&quot;</span></a>
+<a class="sourceLine" id="cb38-2" title="2">(<span class="dt">OK</span> [ [ <span class="dt">PlainAtom</span> (<span class="dt">SpecificChar</span> <span class="ch">&#39;a&#39;</span>),<span class="dt">PlainAtom</span> (<span class="dt">SpecificChar</span> <span class="ch">&#39;b&#39;</span>)</a>
+<a class="sourceLine" id="cb38-3" title="3">      , <span class="dt">PlainAtom</span> (<span class="dt">SpecificChar</span> <span class="ch">&#39;c&#39;</span>)]</a>
+<a class="sourceLine" id="cb38-4" title="4">    , [ <span class="dt">AtLeastOne</span> (<span class="dt">SubPattern</span> [[<span class="dt">PlainAtom</span> (<span class="dt">SpecificChar</span> <span class="ch">&#39;d&#39;</span>)</a>
+<a class="sourceLine" id="cb38-5" title="5">                                ,<span class="dt">PlainAtom</span> (<span class="dt">SpecificChar</span> <span class="ch">&#39;e&#39;</span>)]])</a>
+<a class="sourceLine" id="cb38-6" title="6">      , <span class="dt">PlainAtom</span> (<span class="dt">SpecificChar</span> <span class="ch">&#39;f&#39;</span>)]</a>
+<a class="sourceLine" id="cb38-7" title="7">    , [ <span class="dt">PlainAtom</span> (<span class="dt">SpecificChar</span> <span class="ch">&#39;g&#39;</span>),<span class="dt">OptionalAtom</span> (<span class="dt">SpecificChar</span> <span class="ch">&#39;e&#39;</span>)]</a>
+<a class="sourceLine" id="cb38-8" title="8">    , [ <span class="dt">PlainAtom</span> (<span class="dt">BE</span> (<span class="dt">BracketExpression</span> <span class="dt">False</span></a>
+<a class="sourceLine" id="cb38-9" title="9">                                         [<span class="dt">BracketRange</span> <span class="ch">&#39;x&#39;</span> <span class="ch">&#39;z&#39;</span>]))]</a>
+<a class="sourceLine" id="cb38-10" title="10">    ]</a>
+<a class="sourceLine" id="cb38-11" title="11">,<span class="st">&quot;&quot;</span></a>
+<a class="sourceLine" id="cb38-12" title="12">)</a></code></pre></div>
+</section></section>
+<section><section id="where-next" class="title-slide slide level1"><h1>Where next?</h1><ul>
+<li class="fragment">Better/expandable error messages</li>
+<li class="fragment">Fuse <code>many . satisfy</code></li>
+<li class="fragment">Use <code>Text</code> for better memory locality, etc.</li>
+<li class="fragment">What you’re about to do in the exercises</li>
+</ul>
+<aside class="notes">
+<ul>
+<li><code>manySatisfy</code> not really usable for these parsers though, as we don’t use <code>many . satisfy</code>.</li>
+</ul>
+</aside></section><section id="exercises" class="slide level2">
+<h2>Exercises</h2>
+<div class="sourceCode" id="cb39" style="font-size:70%"><pre class="sourceCode bash"><code class="sourceCode bash"><a class="sourceLine" id="cb39-1" title="1"><span class="fu">git</span> clone https://github.com/ivan-m/LambdaJam-Parsing-exercises.git</a></code></pre></div>
+<ol type="1">
+<li>Take a <code class="sourceCode haskell"><span class="dt">Pattern</span></code> and turn it into a <code class="sourceCode haskell"><span class="dt">Parser</span></code></li>
+<li>Add in <code class="sourceCode haskell">commit</code> functionality to backtracking.</li>
+</ol>
 </section></section>
     </div>
   </div>
-
 
   <script src="reveal.js/lib/js/head.min.js"></script>
   <script src="reveal.js/js/reveal.js"></script>
 
   <script>
 
-      // Full list of configuration options available here:
+      // Full list of configuration options available at:
       // https://github.com/hakimel/reveal.js#configuration
       Reveal.initialize({
-        controls: true,         // Display controls in the bottom right corner
-        progress: true,         // Display a presentation progress bar
-        history: true,          // Push each slide change to the browser history
-        zoomKey: 'shift',
-        center: true,                       // Vertical centering of slides
-        maxScale: 1.5,                  // Bounds for smallest/largest possible content scale
-        slideNumber: false,                // Display the page number of the current slide
-        theme: 'night', // available themes are in /css/theme
-        transition: 'concave', // default/cube/page/concave/zoom/linear/fade/none
-        backgroundTransition: 'zoom', // default/none/fade/slide/convex/concave/zoom
+        // Push each slide change to the browser history
+        history: true,
+        // Vertical centering of slides
+        center: true,
+        // Transition style
+        transition: 'concave', // none/fade/slide/convex/concave/zoom
+        // Transition style for full page slide backgrounds
+        backgroundTransition: 'zoom', // none/fade/slide/convex/concave/zoom
 
-        // Optional libraries used to extend on reveal.js
+        // Optional reveal.js plugins
         dependencies: [
           { src: 'reveal.js/lib/js/classList.js', condition: function() { return !document.body.classList; } },
-          { src: 'reveal.js/plugin/zoom-js/zoom.js', async: true, condition: function() { return !!document.body.classList; } },
-          { src: 'reveal.js/plugin/notes/notes.js', async: true, condition: function() { return !!document.body.classList; } },
-//          { src: 'reveal.js/plugin/search/search.js', async: true, condition: function() { return !!document.body.classList; }, }
-//          { src: 'reveal.js/plugin/remotes/remotes.js', async: true, condition: function() { return !!document.body.classList; } }
-]});
+          { src: 'reveal.js/plugin/zoom-js/zoom.js', async: true },
+          { src: 'reveal.js/plugin/notes/notes.js', async: true }
+        ]
+      });
     </script>
     </body>
 </html>
