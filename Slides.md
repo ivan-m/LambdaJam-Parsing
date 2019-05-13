@@ -833,7 +833,8 @@ git clone https://github.com/ivan-m/LambdaJam-Parsing-exercises.git
 
 1. Take a `Pattern`{.haskell} and turn it into a `Parser`{.haskell}
 2. Add in `commit`{.haskell} functionality to backtracking.
-3. Implement a Continuation Passing Style parser.
+3. Implement a Continuation Passing Style (CPS) parser.
+4. Add `commit`{.haskell} to your CPS parser.
 
 ---
 # reveal.js settings
