@@ -7,11 +7,8 @@ date: 14 May, 2017
 About this workshop
 ===================
 
-## Introductory presentation
-
-. . .
-
-### Feel free to jump straight to the exercises if you prefer.
+* Introductory presentation
+* Feel free to jump straight to the exercises if you prefer.
 
 ## Getting the exercises
 
@@ -23,6 +20,16 @@ Why Parser Combinators?
 =======================
 
 ## Consider a common alternative...
+
+::: notes
+
+* Most of the time when someone wants to parse thing the first thing
+  they think of is regular expressions
+* Something something Jamie Zawinski something something
+* But then they want to parse something completely unsited for
+  regexes, like...
+
+:::
 
 ## {#regex-cthulhu data-background-image="images/stack-overflow-regex-zalgo.png" data-background-size="contain" data-background="white"}
 
@@ -39,7 +46,7 @@ Why Parser Combinators?
 > * Stringly-typed
 > * Not re-usable
 > * Difficult to read
-> * Re-interpreted by compiler
+> * Re-interpreted at runtime
 
 ## Compare the pair
 
@@ -65,7 +72,7 @@ Parser Combinators
 * combinator version could be shorter
 * Which is more readable? combinable?
 * regexes more convenient for custom munging
-* I forgot the `char '.'`; which is it easier to spot in?
+* Say I forgot the `char '.'`; which is it easier to spot in?
 * Only realised long after writing: regex is invalid!
 
 :::
@@ -403,6 +410,10 @@ parseAnyChar = char '.'
    possibly worse performance.
 4. As epitomised by `attoparsec`.
 
+:::
+
+## {#suess-parser data-background-image="images/SeussFinal2.JPG" data-background-size="contain" data-background="white"}
+
 ## Taking Option 4
 
 ```haskell
@@ -524,9 +535,7 @@ parseBracketPattern =
 
 * Remember, we're simplifying by only considering alphanumeric bracket
   expression patterns.
-* Can you see what's wrong with this?
-* We're not really _using_ the result from `withResult`; can we make
-  it nicer?
+* Can you see what's wrong with this? (Hint: ordering!)
 
 :::
 
@@ -667,7 +676,7 @@ parseBracketPattern =
 
 ## The "M" word
 
-```haskell
+```{.haskell style="font-size:80%"}
 class (Applicative m) => Monad m where
     -- Usually called "bind"
     (>>=) :: m a -> (a -> m b) -> m b
@@ -713,6 +722,13 @@ parseBracketPattern = do
   where
     pChar = satisfy isAlphaNum
 ```
+
+::: notes
+
+* `oneOf` here just to make it easier to read/write rather than lots
+  of operators.
+
+:::
 
 ## Bracket Expressions
 
