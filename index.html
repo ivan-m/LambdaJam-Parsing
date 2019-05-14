@@ -101,17 +101,22 @@ code span.wa { color: #7f9f7f; font-weight: bold; } /* Warning */
   <p class="date">14 May, 2017</p>
 </section>
 
-<section><section id="about-this-workshop" class="title-slide slide level1"><h1>About this workshop</h1></section><section id="introductory-presentation" class="slide level2">
-<h2>Introductory presentation</h2>
-<div class="fragment">
-<h3 id="feel-free-to-jump-straight-to-the-exercises-if-you-prefer.">Feel free to jump straight to the exercises if you prefer.</h3>
-</div>
-</section><section id="getting-the-exercises" class="slide level2">
+<section><section id="about-this-workshop" class="title-slide slide level1"><h1>About this workshop</h1><ul>
+<li>Introductory presentation</li>
+<li>Feel free to jump straight to the exercises if you prefer.</li>
+</ul></section><section id="getting-the-exercises" class="slide level2">
 <h2>Getting the exercises</h2>
 <div class="sourceCode" id="cb1" style="font-size:70%"><pre class="sourceCode bash"><code class="sourceCode bash"><a class="sourceLine" id="cb1-1" title="1"><span class="fu">git</span> clone https://github.com/ivan-m/LambdaJam-Parsing-exercises.git</a></code></pre></div>
 </section></section>
 <section><section id="why-parser-combinators" class="title-slide slide level1"><h1>Why Parser Combinators?</h1></section><section id="consider-a-common-alternative" class="slide level2">
 <h2>Consider a common alternative…</h2>
+<aside class="notes">
+<ul>
+<li>Most of the time when someone wants to parse thing the first thing they think of is regular expressions</li>
+<li>Something something Jamie Zawinski something something</li>
+<li>But then they want to parse something completely unsited for regexes, like…</li>
+</ul>
+</aside>
 </section><section id="regex-cthulhu" class="slide level2" data-background-image="images/stack-overflow-regex-zalgo.png" data-background-size="contain" data-background="white">
 <h2></h2>
 <div class="fragment">
@@ -123,7 +128,7 @@ code span.wa { color: #7f9f7f; font-weight: bold; } /* Warning */
 <li class="fragment">Stringly-typed</li>
 <li class="fragment">Not re-usable</li>
 <li class="fragment">Difficult to read</li>
-<li class="fragment">Re-interpreted by compiler</li>
+<li class="fragment">Re-interpreted at runtime</li>
 </ul>
 </section><section id="compare-the-pair" class="slide level2">
 <h2>Compare the pair</h2>
@@ -148,7 +153,7 @@ code span.wa { color: #7f9f7f; font-weight: bold; } /* Warning */
 <li>combinator version could be shorter</li>
 <li>Which is more readable? combinable?</li>
 <li>regexes more convenient for custom munging</li>
-<li>I forgot the <code>char '.'</code>; which is it easier to spot in?</li>
+<li>Say I forgot the <code>char '.'</code>; which is it easier to spot in?</li>
 <li>Only realised long after writing: regex is invalid!</li>
 </ul>
 </aside>
@@ -412,14 +417,17 @@ code span.wa { color: #7f9f7f; font-weight: bold; } /* Warning */
 <li class="fragment"><code>commit</code>-based semantics</li>
 <li class="fragment">“Just do it already”-based semantics</li>
 </ol>
-<p>::: notes</p>
+<aside class="notes">
 <ol type="1">
 <li>This is implemented by <code>ReadS</code>; no-one uses it</li>
 <li>Overlapping patterns and forget the <code>try</code>? No backtracking!</li>
 <li>Forget the <code>commit</code>? Still works, just worse error messages and possibly worse performance.</li>
 <li>As epitomised by <code>attoparsec</code>.</li>
 </ol>
+</aside>
 </div>
+</section><section id="suess-parser" class="slide level2" data-background-image="images/SeussFinal2.JPG" data-background-size="contain" data-background="white">
+<h2></h2>
 </section><section id="taking-option-4" class="slide level2">
 <h2>Taking Option 4</h2>
 <div class="sourceCode" id="cb19"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb19-1" title="1"><span class="co">-- If the first one fails, try the second one</span></a>
@@ -515,8 +523,7 @@ code span.wa { color: #7f9f7f; font-weight: bold; } /* Warning */
 <aside class="notes">
 <ul>
 <li>Remember, we’re simplifying by only considering alphanumeric bracket expression patterns.</li>
-<li>Can you see what’s wrong with this?</li>
-<li>We’re not really <em>using</em> the result from <code>withResult</code>; can we make it nicer?</li>
+<li>Can you see what’s wrong with this? (Hint: ordering!)</li>
 </ul>
 </aside>
 </section><section id="applying-lifted-functions" class="slide level2">
@@ -630,7 +637,7 @@ code span.wa { color: #7f9f7f; font-weight: bold; } /* Warning */
 </aside>
 </section><section id="the-m-word" class="slide level2">
 <h2>The “M” word</h2>
-<div class="sourceCode" id="cb31"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb31-1" title="1"><span class="kw">class</span> (<span class="dt">Applicative</span> m) <span class="ot">=&gt;</span> <span class="dt">Monad</span> m <span class="kw">where</span></a>
+<div class="sourceCode" id="cb31" style="font-size:80%"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb31-1" title="1"><span class="kw">class</span> (<span class="dt">Applicative</span> m) <span class="ot">=&gt;</span> <span class="dt">Monad</span> m <span class="kw">where</span></a>
 <a class="sourceLine" id="cb31-2" title="2">    <span class="co">-- Usually called &quot;bind&quot;</span></a>
 <a class="sourceLine" id="cb31-3" title="3"><span class="ot">    (&gt;&gt;=) ::</span> m a <span class="ot">-&gt;</span> (a <span class="ot">-&gt;</span> m b) <span class="ot">-&gt;</span> m b</a>
 <a class="sourceLine" id="cb31-4" title="4"></a>
@@ -664,6 +671,11 @@ code span.wa { color: #7f9f7f; font-weight: bold; } /* Warning */
 <a class="sourceLine" id="cb33-6" title="6">        ]</a>
 <a class="sourceLine" id="cb33-7" title="7">  <span class="kw">where</span></a>
 <a class="sourceLine" id="cb33-8" title="8">    pChar <span class="ot">=</span> satisfy <span class="fu">isAlphaNum</span></a></code></pre></div>
+<aside class="notes">
+<ul>
+<li><code>oneOf</code> here just to make it easier to read/write rather than lots of operators.</li>
+</ul>
+</aside>
 </section><section id="bracket-expressions" class="slide level2">
 <h2>Bracket Expressions</h2>
 <div class="sourceCode" id="cb34" style="font-size:80%"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb34-1" title="1"><span class="ot">parseBracketExpression ::</span> <span class="dt">Parser</span> <span class="dt">BracketExpression</span></a>
